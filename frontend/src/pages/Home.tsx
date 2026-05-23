@@ -14,9 +14,9 @@ export function Home() {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8 relative">
-      <div className="absolute top-6 right-6 flex items-center gap-2">
-        <Globe className="h-4 w-4 text-muted-foreground" />
+    <div className="flex flex-col items-center justify-center min-h-screen p-8">
+      <div className="fixed top-8 right-8 flex items-center gap-2 z-50">
+        <Globe className="h-5 w-5 text-muted-foreground" />
         <LanguageSelector />
       </div>
       <div className="max-w-2xl text-center space-y-6">
