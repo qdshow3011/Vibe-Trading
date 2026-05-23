@@ -3,7 +3,7 @@ import { Database, Globe, KeyRound, Loader2, RotateCcw, Save, Server, SlidersHor
 import { toast } from "sonner";
 import { api, isAuthRequiredError, type DataSourceSettings, type LLMProviderOption, type LLMSettings } from "@/lib/api";
 import { getApiAuthKey, setApiAuthKey } from "@/lib/apiAuth";
-import { useI18n, languages } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 import { LanguageSelector } from "@/components/common/LanguageSelector";
 
 interface LLMFormState {
