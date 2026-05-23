@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { Database, KeyRound, Loader2, RotateCcw, Save, Server, SlidersHorizontal } from "lucide-react";
+import { Database, Globe, KeyRound, Loader2, RotateCcw, Save, Server, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { api, isAuthRequiredError, type DataSourceSettings, type LLMProviderOption, type LLMSettings } from "@/lib/api";
 import { getApiAuthKey, setApiAuthKey } from "@/lib/apiAuth";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, languages } from "@/lib/i18n";
+import { LanguageSelector } from "@/components/common/LanguageSelector";
 
 interface LLMFormState {
   provider: string;
@@ -222,7 +223,13 @@ export function Settings() {
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">{t.settings}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-semibold tracking-tight">{t.settings}</h1>
+          <div className="flex items-center gap-2">
+            <Globe className="h-4 w-4 text-muted-foreground" />
+            <LanguageSelector />
+          </div>
+        </div>
         <p className="max-w-3xl text-sm text-muted-foreground">{t.settingsDesc}</p>
       </div>
 

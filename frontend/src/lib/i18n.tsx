@@ -1,180 +1,114 @@
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, type ReactNode, useMemo } from "react";
 
-const messages = {
-  home: "Home", agent: "Agent", runs: "Runs", settings: "Settings", alphaZoo: "Alpha Zoo",
-  settingsDesc: "Configure model credentials and market data source tokens for this local project.",
-  localApiAccess: "Local API access",
-  localApiAccessDesc: "For remote or private Web UI deployments, enter the server API key once in this browser. Localhost use can stay blank.",
-  localApiKey: "Server API key",
-  localApiKeyHint: "Stored only in this browser. Leave blank to clear it.",
-  localApiKeySaved: "Local API key saved",
-  localApiKeySave: "Save local key",
-  settingsUnavailable: "Settings are unavailable",
-  llmSettings: "LLM Settings",
-  llmSettingsDesc: "Choose the model used by the agent and save it to the project-local agent/.env file.",
-  llmConnection: "Connection",
-  llmGeneration: "Generation",
-  llmProvider: "Provider",
-  llmModelName: "Model",
-  llmBaseUrl: "Base URL",
-  llmApiKey: "API key",
-  llmApiKeyConfigured: "Configured",
-  llmApiKeyPlaceholder: "Leave blank to keep the current key",
-  llmClearApiKey: "Clear saved API key",
-  llmNoApiKeyRequired: "This provider does not require an API key.",
-  llmOauthRequired: "This provider uses OAuth. Run: {command}",
-  llmTemperature: "Temperature",
-  llmTimeoutSeconds: "Timeout seconds",
-  llmMaxRetries: "Max retries",
-  llmReasoningEffort: "Reasoning effort",
-  llmReasoningOff: "Off",
-  llmSaveSettings: "Save settings",
-  llmSaving: "Saving...",
-  llmSettingsSaved: "LLM settings saved",
-  llmSettingsLoadFailed: "Failed to load LLM settings",
-  llmSettingsSaveFailed: "Failed to save LLM settings",
-  llmEnvPath: "Saved to",
-  llmProviderHint: "Changing providers updates the recommended model and endpoint.",
-  llmModelHint: "Use the exact model id required by your provider.",
-  llmUseProviderDefaults: "Use provider defaults",
-  dataSourceSettings: "Data Source Settings",
-  dataSourceSettingsDesc: "Configure optional market data credentials used by backtests and research agents.",
-  tushareToken: "Tushare token",
-  tushareTokenConfigured: "Configured",
-  tushareTokenPlaceholder: "Leave blank to keep the current token",
-  tushareTokenHint: "Used for China A-share, futures, fund, and macro data. If unset, the project falls back to AKShare where available.",
-  clearTushareToken: "Clear saved Tushare token",
-  baostockStatus: "BaoStock",
-  baostockSupported: "Loader available",
-  baostockNotSupported: "No project loader",
-  baostockPackageInstalled: "Python package installed",
-  baostockPackageMissing: "Python package not installed",
-  saveDataSourceSettings: "Save data source settings",
-  dataSourceSettingsSaved: "Data source settings saved",
-  dataSourceSettingsLoadFailed: "Failed to load data source settings",
-  dataSourceSettingsSaveFailed: "Failed to save data source settings",
-  unknownError: "Unknown error",
-  startResearch: "Start Research", describeStrategy: "Describe a trading strategy to get started.",
-  prompt: "e.g. Create a dual MA crossover strategy for 000001.SZ, backtest 2024",
-  send: "Send", loading: "Loading...", noRuns: "No runs yet. Go to Agent to create one.",
-  runHistory: "Run History", status: "Status", elapsed: "Elapsed",
-  chart: "Chart", trades: "Trades", code: "Code", trace: "Trace",
-  noData: "No data available", noTrades: "No trades recorded.", noCode: "No code files.",
-  noTrace: "No trace data.", priceAndTrades: "Price & Trades", equityAndDrawdown: "Equity & Drawdown",
-  examples: "Try an example:", bye: "Goodbye",
-  heroTitle: "AI-Powered Quant Strategy Research",
-  heroDesc: "Describe a trading strategy in natural language. The agent generates code, runs backtests, and optimizes — all in real time.",
-  feat1: "AI Agent", feat1d: "Natural language strategy generation with ReAct reasoning",
-  feat2: "Built-in Backtest", feat2d: "3 data sources: A-shares, US/HK, Crypto",
-  feat3: "Real-time Streaming", feat3d: "Watch the agent think, call tools, and iterate",
-  feat4: "Strategy Replay", feat4d: "Trade journal analyzer + Shadow Account — extract your rules, backtest them, attribute PnL delta",
-  score: "Score", passed: "Passed", failed: "Failed", findings: "Findings", recommendations: "Recommendations",
-  darkMode: "Dark", lightMode: "Light", language: "Language",
-  sessions: "Sessions", newChat: "New Chat", deleteConfirm: "Delete?",
-  noSessions: "No sessions yet",
-  viewDetails: "View Details",
-  fullReport: "Full Report →",
-  strategyComparison: "Strategy Comparison",
-  baseline: "Baseline", compareTo: "Compare", delta: "Delta", metric: "Metric",
-  selectRun: "-- Select --",
-  selectTwoRuns: "Select two runs to compare their metrics.",
-  online: "Online", offline: "Offline",
-  checking: "Checking…", checkConnection: "Check Connection",
-  appearance: "Appearance",
-  connection: "Connection",
-  endpoints: "Endpoints",
-  review: "Review",
-  noReview: "No review data available.",
-  colTime: "Time", colCode: "Code", colSide: "Side",
-  colPrice: "Price", colQty: "Qty", colReason: "Reason",
-  equityDrawdown: "Equity & Drawdown",
-  noPriceData: "No price data", noEquityData: "No equity data",
-  filterLogs: "Filter logs...",
-  confirmDelete: "Confirm", cancelDelete: "Cancel",
-  reconnectingN: "Connection lost, reconnecting (attempt {n})…",
-  disconnected: "Connection lost",
-  sessionCreated: "Session started",
-  sendFailed: "Failed to send message, please retry.",
-  reconnecting: "Connection lost, reconnecting…",
-  connected: "Connection restored",
-  toolLoadSkill: "Load strategy knowledge",
-  toolWriteFile: "Generate code",
-  toolEditFile: "Edit code",
-  toolReadFile: "Read file",
-  toolRunBacktest: "Run backtest",
-  toolBash: "Run command",
-  toolReadUrl: "Read webpage",
-  toolReadDocument: "Read document",
-  toolCompact: "Compact context",
-  toolCreateTask: "Create task",
-  toolUpdateTask: "Update task",
-  toolSpawnSubagent: "Spawn sub-agent",
-  toolProcessing: "Processing",
-  toolRunning: "Running",
-  thinkingRunning: "Running {tool}...",
-  thinkingDone: "Done · {count} steps",
-  metricTotalReturn: "Total Return",
-  metricAnnualReturn: "Annual",
-  metricSharpe: "Sharpe",
-  metricMaxDrawdown: "Max DD",
-  metricWinRate: "Win Rate",
-  metricTradeCount: "Trades",
-  metricFinalValue: "Final Value",
-  metricCalmar: "Calmar",
-  metricSortino: "Sortino",
-  metricProfitLossRatio: "P/L Ratio",
-  metricMaxConsecutiveLoss: "Max Consec. Loss",
-  metricAvgHoldingDays: "Avg Hold Days",
-  metricBenchmarkReturn: "Benchmark",
-  metricExcessReturn: "Excess Return",
-  metricIR: "IR",
-  validation: "Validation",
-  overlayMA: "Moving Avg",
-  overlayChannel: "Channel",
-  overlayIndicators: "Indicators",
-  overlayClearAll: "Bare K (clear all)",
-  rename: "Rename",
-  goBack: "Go back",
-  noChartData: "No chart data available",
-  noChartDataHint: "The backtest engine may not have generated price data. Check the artifacts/ directory.",
-  executionFailed: "Execution failed",
-  executionTimeout: "Execution timed out, automatically stopped",
-  cancelSent: "Cancel request sent",
-  cancelFailed: "Cancel failed",
-  exportChat: "Export chat",
-  stopGeneration: "Stop generation",
-  newMessages: "New messages",
-  stepN: "Step {n}",
-  exportTitle: "# Chat Export",
-  exportTime: "Export time",
-  exportUser: "## User",
-  exportAssistant: "## Assistant",
-  exportError: "## Error",
-  exportToolCall: "> Tool call",
-  exportRunComplete: "> Backtest complete",
-  downloadTradesCsv: "Download Trades CSV",
-  downloadMetricsCsv: "Download Metrics CSV",
-  example1: "Dual MA crossover on 000001.SZ (5/20 day), backtest 2024",
-  example2: "Build a dual MA crossover strategy for 000001.SZ, backtest 2024",
-  example3: "Bollinger band mean-reversion on 600519.SH, backtest last 3 years",
-  correlation: "Correlation Matrix",
-  selectAssets: "Asset codes",
-  windowLabel: "Window (days)",
-  computeBtn: "Compute",
-  methodLabel: "Method",
-  noCorrelationData: "No correlation data available",
-} as const;
+export type Language = 'en' | 'zh-CN' | 'zh-TW';
 
-type Messages = typeof messages;
+export interface LanguageConfig {
+  code: Language;
+  name: string;
+  nativeName: string;
+}
 
-const I18nCtx = createContext<{ t: Messages }>({ t: messages });
+export const languages: LanguageConfig[] = [
+  { code: 'en', name: 'English', nativeName: 'English' },
+  { code: 'zh-CN', name: 'Chinese (Simplified)', nativeName: '简体中文' },
+  { code: 'zh-TW', name: 'Chinese (Traditional)', nativeName: '繁體中文' },
+];
+
+export const STORAGE_KEY = 'vibe-trading-language';
+
+type Messages = typeof import('./locales/en').messages;
+
+const messagesMap: Record<Language, Messages> = {
+  'en': {} as Messages,
+  'zh-CN': {} as Messages,
+  'zh-TW': {} as Messages,
+};
+
+function getInitialLanguage(): Language {
+  if (typeof window === 'undefined') return 'en';
+  
+  const stored = localStorage.getItem(STORAGE_KEY) as Language | null;
+  if (stored && languages.some(l => l.code === stored)) {
+    return stored;
+  }
+  
+  const browserLang = navigator.language;
+  if (browserLang.startsWith('zh-CN') || browserLang === 'zh-Hans') {
+    return 'zh-CN';
+  }
+  if (browserLang.startsWith('zh') || browserLang === 'zh-Hant') {
+    return 'zh-TW';
+  }
+  
+  return 'en';
+}
+
+interface I18nContextType {
+  t: Messages;
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  languages: LanguageConfig[];
+}
+
+const I18nCtx = createContext<I18nContextType | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
+  const [language, setLanguageState] = useState<Language>(getInitialLanguage);
+  const [messages, setMessages] = useState<Messages>(messagesMap['en']);
+
+  useEffect(() => {
+    const loadMessages = async () => {
+      const lang = getInitialLanguage();
+      setLanguageState(lang);
+      
+      try {
+        const module = await import(`./locales/${lang}.ts`);
+        setMessages(module.messages);
+      } catch (error) {
+        console.warn(`Failed to load messages for ${lang}, falling back to English`);
+        try {
+          const enModule = await import('./locales/en.ts');
+          setMessages(enModule.messages);
+        } catch {
+          console.error('Failed to load English messages');
+        }
+      }
+    };
+    
+    loadMessages();
+  }, []);
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    localStorage.setItem(STORAGE_KEY, lang);
+    
+    import(`./locales/${lang}.ts`)
+      .then(module => {
+        setMessages(module.messages);
+      })
+      .catch(error => {
+        console.error(`Failed to load messages for ${lang}:`, error);
+      });
+  };
+
+  const contextValue = useMemo(() => ({
+    t: messages,
+    language,
+    setLanguage,
+    languages,
+  }), [messages, language]);
+
   return (
-    <I18nCtx.Provider value={{ t: messages }}>
+    <I18nCtx.Provider value={contextValue}>
       {children}
     </I18nCtx.Provider>
   );
 }
 
-export function useI18n() { return useContext(I18nCtx); }
+export function useI18n() {
+  const context = useContext(I18nCtx);
+  if (!context) {
+    throw new Error('useI18n must be used within an I18nProvider');
+  }
+  return context;
+}
