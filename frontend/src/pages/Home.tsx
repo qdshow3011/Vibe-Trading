@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Bot, BarChart3, Zap, UserCircle2 } from "lucide-react";
+import { ArrowRight, Bot, BarChart3, Zap, UserCircle2, Globe } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { LanguageSelector } from "@/components/common/LanguageSelector";
 
 export function Home() {
   const { t } = useI18n();
@@ -13,7 +14,11 @@ export function Home() {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8">
+    <div className="flex flex-col items-center justify-center min-h-screen p-8 relative">
+      <div className="absolute top-6 right-6 flex items-center gap-2">
+        <Globe className="h-4 w-4 text-muted-foreground" />
+        <LanguageSelector />
+      </div>
       <div className="max-w-2xl text-center space-y-6">
         <h1 className="text-4xl font-bold tracking-tight">{t.heroTitle}</h1>
         <p className="text-lg text-muted-foreground">{t.heroDesc}</p>
